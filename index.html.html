@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Anniversary My Love</title>
+    <link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-pink: #ffafbd;
+            --soft-red: #ff8e91;
+            --bg-gradient: linear-gradient(135deg, #ffafbd 0%, #ffc3a0 100%);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            margin: 0;
+            font-family: 'Mali', cursive;
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: #4a4a4a;
+            overflow-x: hidden;
+        }
+
+        /* --- Entry Overlay --- */
+        #entry-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-gradient);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            transition: opacity 1s ease, visibility 1s;
+            color: white;
+            text-align: center;
+        }
+
+        .heart-btn {
+            font-size: 60px;
+            cursor: pointer;
+            animation: pulse 1.5s infinite;
+            background: none;
+            border: none;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 { font-size: 2.2rem; color: white; text-shadow: 2px 2px 8px rgba(0,0,0,0.1); }
+
+        .timer-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 25px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .time-box {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            padding: 15px 5px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+        }
+
+        .time-box span { display: block; font-size: 1.5rem; font-weight: 700; }
+
+        /* --- Locked Letter --- */
+        .content-section {
+            padding: 60px 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .lock-card {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 25px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            max-width: 380px;
+            width: 100%;
+            height: fit-content;
+        }
+
+        .pass-input {
+            width: 100%;
+            padding: 12px;
+            margin: 20px 0;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 1.2rem;
+            outline: none;
+        }
+
+        .btn-unlock {
+            background: var(--soft-red);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        #secret-letter { width: 100%; max-width: 600px; display: none; }
+
+        .paper {
+            background: #fffef0;
+            padding: 40px;
+            border-radius: 5px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            line-height: 2;
+            animation: openPaper 1.2s ease-out forwards;
+        }
+
+        @keyframes openPaper {
+            from { transform: scaleY(0); opacity: 0; }
+            to { transform: scaleY(1); opacity: 1; }
+        }
+
+        .signature { margin-top: 40px; text-align: right; font-weight: bold; color: var(--soft-red); }
+
+        footer { text-align: center; padding: 40px; color: white; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+    <div id="entry-overlay">
+        <button class="heart-btn" onclick="startApp()">💖</button>
+        <p>แตะดูสิ</p>
+    </div>
+
+    <audio id="bg-music" loop preload="auto">
+    <source src="song.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="main-content">
+        <section class="hero">
+            <h1>Happy Anniversary!</h1>
+            <p style="color: white;">ผ่านมาเดือนนึงแล้ว</p>
+            <div class="timer-grid">
+                <div class="time-box"><span id="days">0</span><label>วัน</label></div>
+                <div class="time-box"><span id="hours">0</span><label>ชม.</label></div>
+                <div class="time-box"><span id="minutes">0</span><label>นาที</label></div>
+                <div class="time-box"><span id="seconds">0</span><label>วิ</label></div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <div class="lock-card" id="lock-screen">
+                <h3>🔒 จดหมายลับ</h3>
+                <p>กรอกรหัสผ่าน (ววดดปปปป)<br><small>วันที่เราเริ่มคบกัน</small></p>
+                <input type="tel" id="passcode" class="pass-input" placeholder="00000000" maxlength="8">
+                <button class="btn-unlock" onclick="unlock()">ปลดล็อกจดหมาย</button>
+                <p id="error-msg" style="color: #ff4d4d; display: none; margin-top: 15px;">รหัสไม่ถูกนะ ลองนึกใหม่ดูดีๆ! ❤️</p>
+            </div>
+
+            <div id="secret-letter">
+                <div class="paper">
+                    <h2>ถึง คนเก่งของเค้า❤️</h2>
+                    <p>Happy Anniversary น้าา!</p>
+                    <p>ผ่านมาเดือนนึงแล้วเนาะ ที่เราเริ่มต้นกัน เธอเก่งมาก 55555</p>
+                    <p>สัญญาว่า ไม่ว่าวันข้างหน้าจะยากแค่ไหน แต่เค้าจะอดทนจับมือกับหนูผ่านมันไปนะ!</p>
+                    <div class="signature">— แฟนหนูเอง</div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>Made with ❤️ for You</footer>
+
+    <script>
+        // 1. ตั้งค่าวันที่เริ่มคบ (28 กุมภาพันธ์ 2026)
+        // เดือนใน JS เริ่มที่ 0 (ม.ค.=0, ก.พ.=1)
+        const anniversaryDate = new Date(2026, 1, 28); 
+
+        function startApp() {
+            const music = document.getElementById('bg-music');
+            
+            // สั่งเล่นเพลง
+            music.play().then(() => {
+                console.log("Music started");
+            }).catch(error => {
+                console.log("Music play failed:", error);
+            });
+
+            // ซ่อนหน้าจอแรก
+            document.getElementById('entry-overlay').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('entry-overlay').style.visibility = 'hidden';
+            }, 1000);
+        }
+
+        function updateTimer() {
+            const now = new Date();
+            const diff = now - anniversaryDate;
+            
+            // ป้องกันติดลบถ้ายังไม่ถึงวัน
+            const d = Math.max(0, Math.floor(diff / (1000 * 60 * 60 * 24)));
+            const h = Math.max(0, Math.floor((diff / (1000 * 60 * 60)) % 24));
+            const m = Math.max(0, Math.floor((diff / 1000 / 60) % 60));
+            const s = Math.max(0, Math.floor((diff / 1000) % 60));
+
+            document.getElementById('days').innerText = d;
+            document.getElementById('hours').innerText = h;
+            document.getElementById('minutes').innerText = m;
+            document.getElementById('seconds').innerText = s;
+        }
+        setInterval(updateTimer, 1000);
+        updateTimer();
+
+        function unlock() {
+            const pass = document.getElementById('passcode').value;
+            const correctPass = "280226"; // รหัสผ่านตามที่คุณระบุ
+
+            if (pass === correctPass) {
+                document.getElementById('lock-screen').style.display = 'none';
+                document.getElementById('secret-letter').style.display = 'block';
+            } else {
+                document.getElementById('error-msg').style.display = 'block';
+                document.getElementById('passcode').value = "";
+            }
+        }
+    </script>
+</body>
+</html>
